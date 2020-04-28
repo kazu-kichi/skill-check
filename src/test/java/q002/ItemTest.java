@@ -29,7 +29,7 @@ public class ItemTest {
     @Test(expected = IllegalArgumentException.class)
     public void error_args_comma_over() {
         // setup
-        String arg = "1,伊藤,hoge";
+        String arg = "1,伊藤,aaa";
 
         // test
         Item actual = new Item(arg);
