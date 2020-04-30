@@ -43,6 +43,24 @@ public class Q003 {
         return Q003.class.getResourceAsStream("data.txt");
     }
 
+    // I意外を小文字にする
+    private static String getLowerCase(String value) {
+        if (!"I".equals(value)) {
+            return value.toLowerCase();
+        }
+        return value;
+    }
+
+    // 出現数をカウント
+    private static void countMerge(Map<String, Integer> map, String value) {
+        if (map.containsKey(value)) {
+            int count = map.get(value);
+            map.put(value, ++count);
+        } else {
+            map.put(value, 1);
+        }
+    }
+
     private static Optional<Map<String, Integer>> read(InputStream inputStream) {
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(inputStream, Charset.forName("UTF-8")))) {
@@ -52,20 +70,8 @@ public class Q003 {
                     .forEach(line ->
                             Arrays.stream(line.split("[ ,.;]"))
                                     .filter(s -> !s.isEmpty())
-                                    .map(v -> {
-                                        if (!"I".equals(v)) {
-                                            return v.toLowerCase();
-                                        }
-                                        return v;
-                                    })
-                                    .forEach(v -> {
-                                        if (result.containsKey(v)) {
-                                            int count = result.get(v);
-                                            result.put(v, ++count);
-                                        } else {
-                                            result.put(v, 1);
-                                        }
-                                    })
+                                    .map(Q003::getLowerCase)
+                                    .forEach(v -> countMerge(result, v))
                     );
 
             return Optional.of(result);
@@ -83,4 +89,4 @@ public class Q003 {
                 );
     }
 }
-// 完成までの時間: xx時間 xx分
+// 完成までの時間: 2時間
