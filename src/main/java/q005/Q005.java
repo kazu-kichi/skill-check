@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,14 +47,11 @@ public class Q005 {
     private static Optional<List<WorkData>> read(InputStream inputStream) {
         try (BufferedReader reader = new BufferedReader(
             new InputStreamReader(inputStream, Charset.forName("UTF-8")))) {
-            List<WorkData> result = new ArrayList<>();
 
-            reader.lines()
+            return Optional.of(reader.lines()
                 .skip(1)
                 .map(WorkData::new)
-                .forEach(result::add);
-
-            return Optional.of(result);
+                .collect(Collectors.toList()));
         } catch (IOException e) {
             return Optional.empty();
         }
