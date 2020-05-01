@@ -1,5 +1,15 @@
 package q005;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 /**
  * Q005 データクラスと様々な集計
  *
@@ -30,5 +40,56 @@ T-7-30002: xx時間xx分
 （省略）
  */
 public class Q005 {
+
+    private static InputStream openDataFile() {
+        return Q005.class.getResourceAsStream("data.txt");
+    }
+
+    private static Optional<List<WorkData>> read(InputStream inputStream) {
+        try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(inputStream, Charset.forName("UTF-8")))) {
+            List<WorkData> result = new ArrayList<>();
+
+            reader.lines()
+                .skip(1)
+                .map(WorkData::new)
+                .forEach(result::add);
+
+            return Optional.of(result);
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
+    public static void main(String[] args) {
+        read(openDataFile())
+            .ifPresent(v -> {
+                //NOTE:性能重視なら自前で集計メソッド書いた方がいい
+
+                //役職別
+                v.stream()
+                    .collect(
+                        Collectors.groupingBy(WorkData::getPosition,
+                            Collectors.summingLong(WorkData::getWorkTime)))
+                    .forEach((x, y) -> System.out.println(x + ": " + format(y)));
+                //P code
+                v.stream()
+                    .collect(
+                        Collectors.groupingBy(WorkData::getPCode,
+                            Collectors.summingLong(WorkData::getWorkTime)))
+                    .forEach((x, y) -> System.out.println(x + ": " + format(y)));
+                //社員番号
+                v.stream()
+                    .collect(
+                        Collectors.groupingBy(WorkData::getNumber,
+                            Collectors.summingLong(WorkData::getWorkTime)))
+                    .forEach((x, y) -> System.out.println(x + ": " + format(y)));
+                }
+            );
+    }
+
+    private static String format(long minute) {
+        return (minute / 60) + "時間" + (minute % 60) + "分";
+    }
 }
-// 完成までの時間: xx時間 xx分
+// 完成までの時間: 2時間
